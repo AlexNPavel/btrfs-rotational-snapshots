@@ -35,7 +35,7 @@ for dir in  ${btrfs_subs[@]}; do
     fi
   done
 
-  btrfs sub snap ../ nightly.0
+  btrfs sub snap -r ../ nightly.0
 done
 
 exit $?
