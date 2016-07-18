@@ -1,11 +1,13 @@
 #!/bin/bash
 shift_weeklies() {
-  if [[ -f weekly.8 ]]; then
+  if [[ -d weekly.8 ]]; then
+    echo "Deleting weekly.8"
     btrfs sub del weekly.8
   fi
   for ((i=7;i>=0;i-=1));
   do
-    if [[ -f weekly.$i ]]; then
+    if [[ -d weekly.$i ]]; then
+      echo "Moving weekly.$i to weekly.$(($i + 1))"
       mv weekly.$i weekly.$(($i + 1))
     fi 
   done
@@ -19,24 +21,28 @@ btrfs_subs=(/ /boot/ /home/)
 
 for dir in  ${btrfs_subs[@]}; do
   cd $dir.snapshot
-  pwd
-  if [[ -f nightly.6 ]]; then
-    if [[ day -eq 0 ]]; then
+  echo "In directory $PWD"
+  if [[ -d nightly.6 ]]; then
+    if [[ $day -eq 0 ]]; then
       shift_weeklies
+      echo "Moving nightly.6 to weekly.0"
       mv nightly.6 weekly.0
     else
+      echo "Deleting nightly.6"
       btrfs sub del nightly.6
     fi
   fi
 
   for ((i=5;i>=0;i-=1));
   do
-    if [[ -f nightly.$i ]]; then
-      mv nightly.$i nightly.$(($i + 1))
+    if [[ -d nightly.$i ]]; then
+      echo "Moving nightly.$i to nightly.$(($i + 1))"
+      mv $dir.snapshot/nightly.$i $dir.snapshot/nightly.$(($i + 1))
     fi
   done
 
   btrfs sub snap -r ../ nightly.0
+  echo ""
 done
 
 exit $?
