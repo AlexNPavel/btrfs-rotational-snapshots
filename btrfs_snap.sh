@@ -19,6 +19,7 @@ btrfs_subs=(/ /boot/ /home/)
 
 for dir in  ${btrfs_subs[@]}; do
   cd $dir.snapshot
+  pwd
   if [[ -f nightly.6 ]]; then
     if [[ day -eq 0 ]]; then
       shift_weeklies
